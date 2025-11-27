@@ -59,7 +59,7 @@ const cards = [
 export default function index() {
     const [animated, setAnimated] = useState(-1)
     const scrollRef = useRef<ScrollView>(null)
-    const insets = useSafeAreaInsets()
+
     return (
         <SafeAreaView style={{ flex: 1, paddingHorizontal: 7, backgroundColor: '#FAFAFA' }}>
             <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
@@ -68,10 +68,12 @@ export default function index() {
                         <ProfileView 
                             leftView={
                                 <View style={[styles.profile, { width: 57, height: 57, borderWidth: 2, borderColor: 'white' }]}>
+                                    <Image source={require("@/assets/images/person_1.jpg")} style={{ width: '100%', height: '100%' }} />
                                 </View>
                             } 
                             rightView={
                                 <View style={[styles.profile, styles.profileBottom]}>
+                                    <Image source={require("@/assets/images/person_2.jpg")} style={{ width: '100%', height: '100%' }} />
                                 </View>
                             }
                         />
@@ -169,7 +171,7 @@ const ExpenseCard = ({ index, scrollRef, animated, card, setAnimated }: {
                     }
                     rightView={index % 2 === 1 ? <></> :
                         <View style={[styles.profile, styles.profileBottom]}>
-                            {/* <Image source={require("@/assets/images/person_1.jpg")} style={{ width: '100%', height: '100%' }} /> */}
+                            <Image source={require("@/assets/images/person_2.jpg")} style={{ width: '100%', height: '100%' }} />
                         </View>
                     }
                 />
