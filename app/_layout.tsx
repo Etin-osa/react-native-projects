@@ -13,6 +13,7 @@ export default function RootLayout() {
             <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(open-banking)/index" options={{ headerShown: false }} />
+                <Stack.Screen name="(mood-selector)/index" options={{ headerShown: false }} />
                 {/* <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} /> */}
             </Stack>
         </GestureHandlerRootView>

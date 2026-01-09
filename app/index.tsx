@@ -6,7 +6,7 @@ export default function index() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.replace('/(open-banking)')
+            router.replace('/(mood-selector)')
         }, 10);
 
         return () => clearTimeout(timer);

@@ -4,7 +4,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import { StatusBar } from "expo-status-bar";
 import { Image } from "expo-image";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { ReduceMotion, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { FontAwesome5 } from "@expo/vector-icons";
 
@@ -294,16 +294,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 5
     }
-});
-/**
- * const newRef = useRef();
-
-    const onButtonPress = () => {
-    newRef?.current?.measureInWindow( (fx, fy, width, height) => {
-        console.log('X offset to frame: ' + fx);
-        console.log('Y offset to frame: ' + fy);
-        console.log('Component width is: ' + width);
-        console.log('Component height is: ' + height);
-    });        
-    };
- */
+})
