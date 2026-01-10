@@ -1,44 +1,74 @@
+import { CurveLines } from '@/components/curve-lines'
 import { Colors } from '@/constants/theme'
 import { Ionicons } from '@expo/vector-icons'
+import MaskedView from '@react-native-masked-view/masked-view'
+import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia'
 import { StatusBar } from 'expo-status-bar'
 import React from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Animated, {
+    interpolateColor,
     scrollTo,
     useAnimatedReaction,
     useAnimatedRef,
     useAnimatedScrollHandler,
+    useDerivedValue,
     useSharedValue
 } from 'react-native-reanimated'
-import MaskedView from '@react-native-masked-view/masked-view';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
-const MOOD_GRADIENTS = [
-    ['#FF6B9D', '#C44569'],
-    ['#FFA07A', '#FF6347'],
-    ['#98D8C8', '#6BCF7F'],
-    ['#74B9FF', '#0984E3'],
-    ['#A29BFE', '#6C5CE7'],
-]
+type MoodSection = {
+    title: string
+    moods: [string, string, string]
+    gradient: [string, string]
+}
 
-const MOOD_DATA = MOOD_GRADIENTS.map((gradient, index) => ({
-    color: gradient[0],
-    label: `Mood ${index + 1}`
-}))
+const MOOD_SECTIONS: MoodSection[] = [
+    {
+        title: "Joyful, Cheerful, Content",
+        moods: ["Joyful", "Cheerful", "Content"],
+        gradient: ['#FF6B9D', '#C44569']
+    },
+    {
+        title: "Nostalgic, Curious, Uncertain",
+        moods: ["Nostalgic", "Curious", "Uncertain"],
+        gradient: ['#FFA07A', '#FF6347']
+    },
+    {
+        title: "Satisfied, Calm, Reflective",
+        moods: ["Satisfied", "Calm", "Reflective"],
+        gradient: ['#baece0', '#0c5e1c']
+    },
+    {
+        title: "Melancholy, Worried, Disappointed",
+        moods: ["Melancholy", "Worried", "Disappointed"],
+        gradient: ['#b0d5fa', '#032138']
+    },
+    {
+        title: "Lonely, Frustrated, Happiness",
+        moods: ["Lonely", "Frustrated", "Happiness"],
+        gradient: ['#171538', '#6C5CE7']
+    },
+    {
+        title: "Heartbroken, Despairing, Devastated",
+        moods: ["Heartbroken", "Despairing", "Devastated"],
+        gradient: ['#b35050', '#273b7a']
+    }
+]
 
 const BUTTON_CONTAINER_GAP = 9
 
 type ButtonRowProps = {
-    moodIndex: number
+    moods: string[]
     variant?: 'outline' | 'filled'
 }
 
-const ButtonRow = ({ moodIndex, variant = 'outline' }: ButtonRowProps) => {
+const ButtonRow = ({ moods, variant = 'outline' }: ButtonRowProps) => {
     return (
         <View style={styles.buttonRow}>
-            {[0, 1, 2].map((btnIndex) => (
+            {moods.map((mood, btnIndex) => (
                 <View 
                     key={btnIndex} 
                     style={[
@@ -52,7 +82,7 @@ const ButtonRow = ({ moodIndex, variant = 'outline' }: ButtonRowProps) => {
                             variant === 'outline' ? styles.moodButtonTextOutline : styles.moodButtonTextFilled
                         ]}
                     >
-                        Mood {moodIndex * 3 + btnIndex + 1}
+                        {mood}
                     </Text>
                 </View>
             ))}
@@ -97,6 +127,16 @@ export default function MoodSelector() {
         }
     })
 
+    const inputRange = MOOD_SECTIONS.map((_, index) => index * SCREEN_WIDTH)
+    const outputRange1 = MOOD_SECTIONS.map(section => section.gradient[0])
+    const outputRange2 = MOOD_SECTIONS.map(section => section.gradient[1])
+
+    const gradientColors = useDerivedValue(() => {
+        const c1 = interpolateColor(scrollX.value, inputRange, outputRange1)
+        const c2 = interpolateColor(scrollX.value, inputRange, outputRange2)
+        return [c1, c2]
+    })
+
     useAnimatedReaction(
         () => scrollX.value,
         (currentScrollX) => {
@@ -126,9 +166,9 @@ export default function MoodSelector() {
                     scrollEventThrottle={16}
                     // contentContainerStyle={styles.scrollContent}
                 >
-                    {MOOD_DATA.map((item, index) => (
+                    {MOOD_SECTIONS.map((section, index) => (
                         <View key={index} style={styles.topItemContainer}>
-                            <View style={[styles.placeholderCard, { backgroundColor: item.color }]} />
+                            <View style={[styles.placeholderCard, { backgroundColor: section.gradient[0] }]} />
                         </View>
                     ))}
                 </Animated.ScrollView>
@@ -161,10 +201,13 @@ export default function MoodSelector() {
                         onScroll={onScrollBottom}
                         scrollEventThrottle={16}
                     >
-                        {MOOD_DATA.map((_, index) => (
+                        {MOOD_SECTIONS.map((section, index) => (
                             <View key={index} style={styles.bottomItemContainer}>
-                                <View style={styles.topPlaceholder} />
-                                <ButtonRow moodIndex={index} variant="outline" />
+                                <View>
+                                    <CurveLines width={SCREEN_WIDTH} height={150} />
+                                </View>
+                                    
+                                <ButtonRow moods={section.moods} variant="outline" />
                             </View>
                         ))}
                     </Animated.ScrollView>
@@ -178,43 +221,50 @@ export default function MoodSelector() {
                             <View style={styles.maskView} />
                         }
                     >
-                        <View style={{ backgroundColor: 'white' }}>
-                            <Animated.ScrollView
-                                ref={replicaScrollRef}
-                                horizontal
-                                snapToInterval={SCREEN_WIDTH}
-                                decelerationRate="fast"
-                                bounces={true}
-                                overScrollMode="always"
-                                showsHorizontalScrollIndicator={false}
-                                pointerEvents="none"
-                                scrollEnabled={false}
-                                style={styles.replicaScroll}
-                            >
-                                {MOOD_DATA.map((_, index) => (
-                                    <View 
-                                        key={index} 
-                                        style={[
-                                            styles.bottomItemContainer, 
-                                            { flexDirection: 'row', justifyContent: 'center' }
-                                        ]}
-                                    >
-                                        {[0, 1, 2].map((btnIndex) => 
-                                            <View 
-                                                style={{ 
-                                                    flex: 1, 
-                                                    justifyContent: 'center', 
-                                                    alignItems: 'center' 
-                                                }} 
-                                                key={btnIndex}
-                                            >
-                                                <Text>Mood {index * 3 + btnIndex + 1}</Text>
-                                            </View>
-                                        )}
-                                    </View>
-                                ))}
-                            </Animated.ScrollView>
-                        </View>
+                        <Canvas style={StyleSheet.absoluteFill}>
+                            <Rect x={0} y={0} width={SCREEN_WIDTH} height={50}>
+                                <LinearGradient
+                                    start={vec(0, 0)}
+                                    end={vec(SCREEN_WIDTH, 50)}
+                                    colors={gradientColors}
+                                />
+                            </Rect>
+                        </Canvas>
+                        <Animated.ScrollView
+                            ref={replicaScrollRef}
+                            horizontal
+                            snapToInterval={SCREEN_WIDTH}
+                            decelerationRate="fast"
+                            bounces={true}
+                            overScrollMode="always"
+                            showsHorizontalScrollIndicator={false}
+                            pointerEvents="none"
+                            scrollEnabled={false}
+                            style={styles.replicaScroll}
+                        >
+                            {MOOD_SECTIONS.map((section, index) => (
+                                <View 
+                                    key={index} 
+                                    style={[
+                                        styles.bottomItemContainer, 
+                                        { flexDirection: 'row', justifyContent: 'center' }
+                                    ]}
+                                >
+                                    {section.moods.map((mood, btnIndex) => 
+                                        <View 
+                                            style={{ 
+                                                flex: 1, 
+                                                justifyContent: 'center', 
+                                                alignItems: 'center' 
+                                            }} 
+                                            key={btnIndex}
+                                        >
+                                            <Text>{mood}</Text>
+                                        </View>
+                                    )}
+                                </View>
+                            ))}
+                        </Animated.ScrollView>
                     </MaskedView>
                 </View>
                 <View style={{ height: insets.bottom }} />
@@ -292,18 +342,12 @@ const styles = StyleSheet.create({
     },
     bottomItemContainer: {
         width: SCREEN_WIDTH,
-        paddingHorizontal: 10,
         gap: 20,
-    },
-    topPlaceholder: {
-        height: 100, 
-        backgroundColor: '#2A2D2E',
-        borderRadius: 20,
-        width: '100%',
     },
     buttonRow: {
         flexDirection: 'row',
         gap: BUTTON_CONTAINER_GAP,
+        paddingHorizontal: 10
     },
     moodButton: {
         flex: 1,
