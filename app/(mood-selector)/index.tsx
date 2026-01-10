@@ -1,3 +1,4 @@
+import { BellCurveMask } from '@/components/bell-curve-mask'
 import { CurveLines } from '@/components/curve-lines'
 import { Colors } from '@/constants/theme'
 import { Ionicons } from '@expo/vector-icons'
@@ -20,70 +21,48 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 type MoodSection = {
-    title: string
     moods: [string, string, string]
     gradient: [string, string]
 }
 
 const MOOD_SECTIONS: MoodSection[] = [
     {
-        title: "Joyful, Cheerful, Content",
         moods: ["Joyful", "Cheerful", "Content"],
         gradient: ['#FF6B9D', '#C44569']
     },
     {
-        title: "Nostalgic, Curious, Uncertain",
         moods: ["Nostalgic", "Curious", "Uncertain"],
         gradient: ['#FFA07A', '#FF6347']
     },
     {
-        title: "Satisfied, Calm, Reflective",
         moods: ["Satisfied", "Calm", "Reflective"],
         gradient: ['#baece0', '#0c5e1c']
     },
     {
-        title: "Melancholy, Worried, Disappointed",
         moods: ["Melancholy", "Worried", "Disappointed"],
         gradient: ['#b0d5fa', '#032138']
     },
     {
-        title: "Lonely, Frustrated, Happiness",
         moods: ["Lonely", "Frustrated", "Happiness"],
         gradient: ['#171538', '#6C5CE7']
     },
     {
-        title: "Heartbroken, Despairing, Devastated",
         moods: ["Heartbroken", "Despairing", "Devastated"],
         gradient: ['#b35050', '#273b7a']
     }
 ]
-
-const BUTTON_CONTAINER_GAP = 9
 
 type ButtonRowProps = {
     moods: string[]
     variant?: 'outline' | 'filled'
 }
 
-const ButtonRow = ({ moods, variant = 'outline' }: ButtonRowProps) => {
+const ButtonRow = ({ moods }: ButtonRowProps) => {
     return (
         <View style={styles.buttonRow}>
             {moods.map((mood, btnIndex) => (
-                <View 
-                    key={btnIndex} 
-                    style={[
-                        styles.moodButton,
-                        variant === 'outline' ? styles.moodButtonOutline : styles.moodButtonFilled,
-                    ]}
-                >
-                    <Text 
-                        style={[
-                            styles.moodButtonText,
-                            variant === 'outline' ? styles.moodButtonTextOutline : styles.moodButtonTextFilled
-                        ]}
-                    >
-                        {mood}
-                    </Text>
+                <View key={btnIndex} style={styles.moodButton}>
+                    <Text style={styles.moodButtonText}>{mood}</Text>
                 </View>
             ))}
         </View>
@@ -189,7 +168,11 @@ export default function MoodSelector() {
             <View style={styles.bottomSection}>
                 <Text style={styles.headerText}>Select your today's mood</Text>
 
-                <View style={{ position: 'relative' }}>
+                <View style={styles.scrollContainer}>
+                    <View style={styles.floatingMaskContainer} pointerEvents="none">
+                        <BellCurveMask width={SCREEN_WIDTH} height={100} />
+                    </View>
+
                     <Animated.ScrollView
                         ref={bottomScrollRef}
                         horizontal
@@ -203,18 +186,15 @@ export default function MoodSelector() {
                     >
                         {MOOD_SECTIONS.map((section, index) => (
                             <View key={index} style={styles.bottomItemContainer}>
-                                <View>
-                                    <CurveLines width={SCREEN_WIDTH} height={150} />
-                                </View>
-                                    
-                                <ButtonRow moods={section.moods} variant="outline" />
+                                <CurveLines/>
+                                <ButtonRow moods={section.moods} />
                             </View>
                         ))}
                     </Animated.ScrollView>
-
+                                        
                     <MaskedView
                         style={{
-                            transform: [{ translateY: -50 }],
+                            transform: [{ translateY: -51 }],
                             pointerEvents: 'none',
                         }}
                         maskElement={
@@ -222,10 +202,10 @@ export default function MoodSelector() {
                         }
                     >
                         <Canvas style={StyleSheet.absoluteFill}>
-                            <Rect x={0} y={0} width={SCREEN_WIDTH} height={50}>
+                            <Rect x={0} y={0} width={SCREEN_WIDTH} height={52}>
                                 <LinearGradient
                                     start={vec(0, 0)}
-                                    end={vec(SCREEN_WIDTH, 50)}
+                                    end={vec(SCREEN_WIDTH, 52)}
                                     colors={gradientColors}
                                 />
                             </Rect>
@@ -247,7 +227,8 @@ export default function MoodSelector() {
                                     key={index} 
                                     style={[
                                         styles.bottomItemContainer, 
-                                        { flexDirection: 'row', justifyContent: 'center' }
+                                        { flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 10, pointerEvents: 'none' },
+                                        
                                     ]}
                                 >
                                     {section.moods.map((mood, btnIndex) => 
@@ -255,7 +236,9 @@ export default function MoodSelector() {
                                             style={{ 
                                                 flex: 1, 
                                                 justifyContent: 'center', 
-                                                alignItems: 'center' 
+                                                alignItems: 'center',
+                                                pointerEvents: 'none',
+                                                borderRadius: 25,
                                             }} 
                                             key={btnIndex}
                                         >
@@ -267,7 +250,6 @@ export default function MoodSelector() {
                         </Animated.ScrollView>
                     </MaskedView>
                 </View>
-                <View style={{ height: insets.bottom }} />
             </View>
         </View>
     )
@@ -327,6 +309,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginHorizontal: 'auto'
     },
+    scrollContainer: {
+        position: 'relative',
+        paddingBottom: 10
+    },
     topItemContainer: {
         width: SCREEN_WIDTH,
         justifyContent: 'center',
@@ -340,13 +326,29 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         opacity: 0.9,
     },
+    floatingMaskContainer: {
+        position: 'absolute',
+        top: 0, 
+        left: 0,
+        width: SCREEN_WIDTH,
+        height: 100, 
+        zIndex: 10,
+        pointerEvents: 'none',
+    },
     bottomItemContainer: {
         width: SCREEN_WIDTH,
-        gap: 20,
+        gap: 9,
+    },
+    topPlaceholder: {
+        height: 100, 
+        backgroundColor: '#2A2D2E',
+        borderRadius: 20,
+        width: '100%',
+        overflow: 'hidden',
     },
     buttonRow: {
         flexDirection: 'row',
-        gap: BUTTON_CONTAINER_GAP,
+        gap: 9,
         paddingHorizontal: 10
     },
     moodButton: {
@@ -355,32 +357,24 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    moodButtonOutline: {
         borderWidth: 1,
         borderColor: 'white',
-        backgroundColor: 'transparent',
-    },
-    moodButtonFilled: {
         backgroundColor: 'transparent',
     },
     moodButtonText: {
         fontSize: 14,
         fontWeight: '600',
-    },
-    moodButtonTextOutline: {
         color: 'white',
     },
-    moodButtonTextFilled: {
-        color: 'black',
-    },
     replicaScroll: {
-        height: 50,
+        height: 52,
         backgroundColor: 'transparent',
         pointerEvents: 'none',
     },
     maskView: { 
-        height: 50, width: (SCREEN_WIDTH / 3) - 13, 
+        height: 52, 
+        width: (SCREEN_WIDTH / 3) - 10, 
+        // width: SCREEN_WIDTH, 
         pointerEvents: 'none', 
         marginHorizontal: 'auto', 
         backgroundColor: 'red', 
