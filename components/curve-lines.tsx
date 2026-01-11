@@ -15,7 +15,7 @@ export const CurveLines = ({
 
     const linesPath = useMemo(() => {
         const path = Skia.Path.Make()
-        const numLines = 60
+        const numLines = 30
         const spacing = width / numLines
         
         for (let i = 0; i <= numLines; i++) {

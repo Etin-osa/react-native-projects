@@ -1,5 +1,6 @@
 import { BellCurveMask } from '@/components/bell-curve-mask'
 import { CurveLines } from '@/components/curve-lines'
+import { CalmFace, CheerfulFace, CuriousFace, DespairingFace, FrustratedFace, WorriedFace } from '@/components/emoji-faces'
 import { Colors } from '@/constants/theme'
 import { Ionicons } from '@expo/vector-icons'
 import MaskedView from '@react-native-masked-view/masked-view'
@@ -16,39 +17,46 @@ import Animated, {
     useDerivedValue,
     useSharedValue
 } from 'react-native-reanimated'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 type MoodSection = {
     moods: [string, string, string]
-    gradient: [string, string]
+    gradient: [string, string],
+    zIndex: number
 }
 
 const MOOD_SECTIONS: MoodSection[] = [
     {
         moods: ["Joyful", "Cheerful", "Content"],
-        gradient: ['#FF6B9D', '#C44569']
+        gradient: ['#FF6B9D', '#6745c4'],
+        zIndex: 2
     },
     {
         moods: ["Nostalgic", "Curious", "Uncertain"],
-        gradient: ['#FFA07A', '#FF6347']
+        gradient: ['#FFA07A', '#FF6347'],
+        zIndex: 1
     },
     {
         moods: ["Satisfied", "Calm", "Reflective"],
-        gradient: ['#baece0', '#0c5e1c']
+        gradient: ['#baece0', '#0c5e1c'],
+        zIndex: 2
     },
     {
         moods: ["Melancholy", "Worried", "Disappointed"],
-        gradient: ['#b0d5fa', '#032138']
+        gradient: ['#b0d5fa', '#032138'],
+        zIndex: 1
     },
     {
         moods: ["Lonely", "Frustrated", "Happiness"],
-        gradient: ['#171538', '#6C5CE7']
+        gradient: ['#171538', '#6C5CE7'],
+        zIndex: 1
     },
     {
         moods: ["Heartbroken", "Despairing", "Devastated"],
-        gradient: ['#b35050', '#273b7a']
+        gradient: ['#b35050', '#273b7a'],
+        zIndex: 2
     }
 ]
 
@@ -67,6 +75,25 @@ const ButtonRow = ({ moods }: ButtonRowProps) => {
             ))}
         </View>
     )
+}
+
+const EmojiRow = ({ mood, color }: { mood: string, color: string }) => {
+    switch (mood) {
+        case "Cheerful":
+            return <CheerfulFace color={color} />
+        case "Curious":
+            return <CuriousFace color={color} />
+        case "Calm":
+            return <CalmFace color={color} />
+        case "Worried":
+            return <WorriedFace color={color} />
+        case "Frustrated":
+            return <FrustratedFace color={color} />
+        case "Despairing":
+            return <DespairingFace color={color} />
+        default:
+            return null
+    }
 }
 
 export default function MoodSelector() {
@@ -132,7 +159,20 @@ export default function MoodSelector() {
         <View style={styles.container}>
             <StatusBar style="dark" />
             
-            <View style={styles.topSection}>
+            <View style={styles.topSection}>                
+                <View style={[styles.navigationHeader, { top: insets.top + 20 }]}>
+                    
+                    <TouchableOpacity style={styles.circleButton}>
+                        <Ionicons name="arrow-back" size={24} color="#11181C" />
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={[styles.circleButton, { paddingHorizontal: 20 }]}>
+                        <Text style={styles.saveButtonText}>Save</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* background color */}
+
                 <Animated.ScrollView
                     ref={topScrollRef}
                     horizontal
@@ -143,26 +183,16 @@ export default function MoodSelector() {
                     showsHorizontalScrollIndicator={false}
                     onScroll={onScrollTop}
                     scrollEventThrottle={16}
-                    // contentContainerStyle={styles.scrollContent}
                 >
                     {MOOD_SECTIONS.map((section, index) => (
-                        <View key={index} style={styles.topItemContainer}>
-                            <View style={[styles.placeholderCard, { backgroundColor: section.gradient[0] }]} />
+                        <View key={index} style={[
+                            { marginTop: insets.top + 20, zIndex: section.zIndex },
+                            styles.topItemContainer
+                        ]}>
+                            <EmojiRow mood={section.moods[1]} color={section.gradient[0]} />
                         </View>
                     ))}
                 </Animated.ScrollView>
-                
-                <SafeAreaView edges={['top']} style={styles.safeArea}>
-                    <View style={styles.navigationHeader}>
-                        <TouchableOpacity style={styles.circleButton}>
-                            <Ionicons name="arrow-back" size={24} color="#11181C" />
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity style={[styles.circleButton, { paddingHorizontal: 20 }]}>
-                            <Text style={styles.saveButtonText}>Save</Text>
-                        </TouchableOpacity>
-                    </View>
-                </SafeAreaView>
             </View>
             
             <View style={styles.bottomSection}>
@@ -171,6 +201,15 @@ export default function MoodSelector() {
                 <View style={styles.scrollContainer}>
                     <View style={styles.floatingMaskContainer} pointerEvents="none">
                         <BellCurveMask width={SCREEN_WIDTH} height={100} />
+                        <Canvas style={StyleSheet.absoluteFill}>
+                            <Rect x={SCREEN_WIDTH / 2} y={3} width={2} height={120}>
+                                <LinearGradient
+                                    start={vec(0, 0)}
+                                    end={vec(2, 100)}
+                                    colors={gradientColors}
+                                />
+                            </Rect>
+                        </Canvas>
                     </View>
 
                     <Animated.ScrollView
@@ -205,7 +244,7 @@ export default function MoodSelector() {
                             <Rect x={0} y={0} width={SCREEN_WIDTH} height={52}>
                                 <LinearGradient
                                     start={vec(0, 0)}
-                                    end={vec(SCREEN_WIDTH, 52)}
+                                    end={vec(SCREEN_WIDTH * 0.7, 52)}
                                     colors={gradientColors}
                                 />
                             </Rect>
@@ -266,21 +305,17 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
         overflow: 'hidden',
+        position: 'relative',
     },
-    safeArea: {
+    navigationHeader: {
         position: 'absolute',
-        top: 0,
         left: 0,
         right: 0,
         zIndex: 10,
-    },
-    navigationHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 10,
-        paddingBottom: 10,
     },
     circleButton: {
         padding: 12,
@@ -318,7 +353,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 40,
-        paddingTop: 100,
+        position: 'relative',
+        overflow: 'visible',
+        borderWidth: 1,
+        borderColor: 'red'
     },
     placeholderCard: {
         width: '100%',
@@ -331,20 +369,13 @@ const styles = StyleSheet.create({
         top: 0, 
         left: 0,
         width: SCREEN_WIDTH,
-        height: 100, 
+        height: 110, 
         zIndex: 10,
         pointerEvents: 'none',
     },
     bottomItemContainer: {
         width: SCREEN_WIDTH,
-        gap: 9,
-    },
-    topPlaceholder: {
-        height: 100, 
-        backgroundColor: '#2A2D2E',
-        borderRadius: 20,
-        width: '100%',
-        overflow: 'hidden',
+        gap: 30,
     },
     buttonRow: {
         flexDirection: 'row',

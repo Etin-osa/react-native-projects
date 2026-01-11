@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/theme"
-import { Canvas, LinearGradient, Path, Rect, Skia, vec } from "@shopify/react-native-skia"
+import { Canvas, Group, Path, RadialGradient, Rect, Skia, vec } from "@shopify/react-native-skia"
 import { useMemo } from "react"
 import { Dimensions, ViewStyle } from "react-native"
 
@@ -57,6 +57,24 @@ export const BellCurveMask = ({
                 path={maskPath} 
                 color={backgroundColor}
             />
+            <Group 
+                origin={vec(width / 2, height / 2)}
+                transform={[{ scaleX: 1.5 }, { scaleY: 0.6 }]}
+            >
+                <Rect 
+                    x={-width * 0.25} 
+                    y={height / 2 - width / 2} 
+                    width={width * 1.5} 
+                    height={width}
+                >
+                    <RadialGradient
+                        c={vec(width / 2, height / 15)}
+                        r={width / 2}
+                        colors={["#15171800", Colors.dark.background]}
+                        positions={[0, 0.65]}
+                    />
+                </Rect>
+            </Group>
         </Canvas>
     )
 }
