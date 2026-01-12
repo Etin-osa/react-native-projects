@@ -34,13 +34,13 @@ const MOOD_SECTIONS: MoodSection[] = [
         zIndex: 2
     },
     {
-        moods: ["Nostalgic", "Curious", "Uncertain"],
-        gradient: ['#FFA07A', '#FF6347'],
+        moods: ["Satisfied", "Calm", "Reflective"],
+        gradient: ['#baece0', '#0c5e1c'],
         zIndex: 1
     },
     {
-        moods: ["Satisfied", "Calm", "Reflective"],
-        gradient: ['#baece0', '#0c5e1c'],
+        moods: ["Nostalgic", "Curious", "Uncertain"],
+        gradient: ['#FFA07A', '#FF6347'],
         zIndex: 2
     },
     {
@@ -50,7 +50,7 @@ const MOOD_SECTIONS: MoodSection[] = [
     },
     {
         moods: ["Lonely", "Frustrated", "Happiness"],
-        gradient: ['#171538', '#6C5CE7'],
+        gradient: ['#6C5CE7', '#171538'],
         zIndex: 1
     },
     {
@@ -355,8 +355,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 40,
         position: 'relative',
         overflow: 'visible',
-        borderWidth: 1,
-        borderColor: 'red'
+        // borderWidth: 1,
+        // borderColor: 'red'
     },
     placeholderCard: {
         width: '100%',

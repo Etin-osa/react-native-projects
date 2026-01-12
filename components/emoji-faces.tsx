@@ -1,7 +1,7 @@
-import { Canvas, Circle, Paint, Path } from '@shopify/react-native-skia'
+import { Canvas, center, Circle, Group, Paint, Path, Skia } from '@shopify/react-native-skia'
 import React from 'react'
 import { Dimensions } from 'react-native'
-import { BothTeeth, CurvedEye, SimpleLeftEye, SimpleRightEye, TeethWithTongue } from './facial-features'
+import { BothTeeth, CurvedEye, CurvedMouth, SimpleLeftEye, SimpleRightEye, TeethWithTongue } from './facial-features'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 
@@ -30,7 +30,7 @@ export const CheerfulFace: React.FC<FaceProps> = ({ color }) => {
 }
 
 
-export const CuriousFace: React.FC<FaceProps> = ({ color }) => {
+export const CalmFace: React.FC<FaceProps> = ({ color }) => {
     const headWidth = SCREEN_WIDTH * 3
     const height = 440
     const centerX = headWidth / 2
@@ -65,63 +65,116 @@ export const CuriousFace: React.FC<FaceProps> = ({ color }) => {
     )
 }
 
-export const CalmFace: React.FC<FaceProps> = ({ color }) => {
-    const topWidth = SCREEN_WIDTH * 0.6
-    const bottomWidth = SCREEN_WIDTH * 2.3
-    const visibleHeight = SCREEN_HEIGHT
-    const radius = 60
-    const topY = 45
-    const bottomY = visibleHeight
-    const topLeftX = (bottomWidth - topWidth) / 2
-    const topRightX = topLeftX + topWidth
-    const bottomLeftX = 0
-    const bottomRightX = bottomWidth
-
-    // Path: start at top left, round top left, top, round top right, right side, bottom, left side
-    const path = `
-        M ${topLeftX + radius} ${topY}
-        L ${topRightX - radius} ${topY}
-        Q ${topRightX} ${topY} ${topRightX + radius * 0.6} ${topY + radius * 0.8}
-        L ${bottomRightX} ${bottomY}
-        L ${bottomLeftX} ${bottomY}
-        L ${topLeftX - radius * 0.6} ${topY + radius * 0.8}
-        Q ${topLeftX} ${topY} ${topLeftX + radius} ${topY}
-        Z
+export const CuriousFace: React.FC<FaceProps> = ({ color }) => {
+    const headWidth = SCREEN_WIDTH * 1.3
+    const height = 440
+    const centerX = headWidth / 2
+    const topY = -10
+    const topEyes = topY + 140
+    
+    const pathString = `
+        m 65,16 h 50 a 26,26 0 0 1 25,18 L 176,136 a 13,13 0 0 1 -12,18 H 18 A 13,13 0 0 1 5,136 L 40,34 A 26,26 0 0 1 65,16 Z
     `
+    const skiaPath = Skia.Path.MakeFromSVGString(pathString);
+
+    if (!skiaPath) {
+        return null
+    }
+
+    const { x, width } = skiaPath.getBounds();
+
+    // formula to center the path in the canvas
+    const scaleX = 3.3
+    const translateX = (headWidth - width * scaleX) / 2 - x * scaleX;
 
     return (
-        <Canvas
-            style={{
-                position: 'absolute',
-                width: bottomWidth,
-                height: visibleHeight,
-                left: SCREEN_WIDTH / 2 - bottomWidth / 2,
-                top: 0
-            }}
-        >
-            <Path path={path} color={color} />
+        <Canvas style={{ 
+            position: 'absolute',
+            width: headWidth, 
+            height: height + 200,
+            left: SCREEN_WIDTH / 2 - headWidth / 2,
+            top: topY,
+        }}>
+            <Group transform={[{ translateX }, { scaleX }, { scaleY: 3.7 }]}> 
+                <Path path={pathString} color={color}/>
+            </Group>    
+            <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
+            <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
+            <CurvedMouth x={centerX} y={topEyes} size={60} curve={25} />
         </Canvas>
     )
 }
 
 export const WorriedFace: React.FC<FaceProps> = ({ color}) => {
+    const headWidth = SCREEN_WIDTH 
+    const height = 400
+    const topEyes = 110
+    const centerX = headWidth / 2
+    
+    const pathString = `
+        m 41.63781,69.743335 c 0,0 1.350593,-37.213794 39.29569,-37.474031 37.94509,-0.260237 39.29569,37.474031 39.29569,37.474031 V 170.19456 H 41.63781 Z
+    `
+    const skiaPath = Skia.Path.MakeFromSVGString(pathString);
+
+    if (!skiaPath) {
+        return null
+    }
+
+    const { x, width } = skiaPath.getBounds();
+    // formula to center the path in the canvas
+    const scale = 4.6
+    const translateX = (headWidth - width * scale) / 2 - x * scale;
+
     return (
-        <Canvas style={{ width: 80, height: 80 }}>
-            <Circle cx={80 / 2} cy={80 / 2} r={80 / 2 - 4} color="#FFA500" />
-            <Circle cx={80 / 2} cy={80 / 2} r={80 / 2 - 4}>
-                <Paint color="#000" style="stroke" strokeWidth={2} />
-            </Circle>
+        <Canvas style={{ 
+            position: 'absolute',
+            width: headWidth, 
+            height: height + 200,
+            left: SCREEN_WIDTH / 2 - headWidth / 2,
+            top: 0,
+        }}>
+            <Group transform={[{ translateX }, { translateY: -115 }, { scale }]}>
+                <Path path={pathString} color={color} />
+            </Group>
+            <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
+            <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
+            <CurvedMouth x={centerX} y={topEyes + 5} size={50} curve={0} />
         </Canvas>
     )
 }
 
-export const FrustratedFace: React.FC<FaceProps> = ({ color}) => {
+export const FrustratedFace: React.FC<FaceProps> = ({ color }) => {
+    const headWidth = SCREEN_WIDTH * 0.85
+    const height = 600
+    const radius = 70
+
+    const path = `
+        M ${radius} 0
+        H ${headWidth - radius}
+        Q ${headWidth} 0 ${headWidth} ${radius}
+        V ${height - radius}
+        Q ${headWidth} ${height} ${headWidth - radius} ${height}
+        H ${radius}
+        Q 0 ${height} 0 ${height - radius}
+        V ${radius}
+        Q 0 0 ${radius} 0
+        Z
+    `
+
+    const centerX = headWidth / 2
+    const topEyes = 65
+
     return (
-        <Canvas style={{ width: 80, height: 80 }}>
-            <Circle cx={80 / 2} cy={80 / 2} r={80 / 2 - 4} color="#FF6B6B" />
-            <Circle cx={80 / 2} cy={80 / 2} r={80 / 2 - 4}>
-                <Paint color="#000" style="stroke" strokeWidth={2} />
-            </Circle>
+        <Canvas style={{
+            position: 'absolute',
+            width: headWidth,
+            height: height,
+            left: SCREEN_WIDTH / 2 - headWidth / 2,
+            top: 45
+        }}>
+            <Path path={path} color={color} />
+            <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
+            <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
         </Canvas>
     )
 }

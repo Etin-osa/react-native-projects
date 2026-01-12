@@ -149,3 +149,22 @@ export const TeethWithTongue: React.FC<FacialProps> = ({ x, y, size }) => {
         </MouthMask>
     )
 }
+
+export const CurvedMouth: React.FC<{
+    x: number
+    y: number
+    size: number
+    curve: number
+    transform?: Array<{ translateX?: number } | { translateY?: number } | { rotate?: number }>
+}> = ({ x, y, size, curve }) => {
+    const mouthY = y + 40
+    const mouthX1 = x - size / 2
+    const mouthX2 = x + size / 2
+    const mouthControlY = mouthY + (curve)
+
+    return (
+        <Path path={
+            `M ${mouthX1} ${mouthY} Q ${x} ${mouthControlY} ${mouthX2} ${mouthY}`
+        } color="#222" style="stroke" strokeWidth={8} strokeCap={'round'} />
+    )
+}
