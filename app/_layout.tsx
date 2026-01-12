@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFonts } from 'expo-font';
 import 'react-native-reanimated';
 
 export const unstable_settings = {
@@ -7,6 +8,14 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+    const [loaded] = useFonts({
+        BodoniModa_Bold: require('../assets/fonts/BodoniModa_48pt-Bold.ttf'),
+        BodoniModa_ExtraBold: require('../assets/fonts/BodoniModa_48pt-ExtraBold.ttf'),
+    })
+
+    if (!loaded) {
+        return null;
+    }
 
     return (
         <GestureHandlerRootView>
@@ -19,7 +28,3 @@ export default function RootLayout() {
         </GestureHandlerRootView>
     );
 }
-/*
-<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-</ThemeProvider>
-*/

@@ -105,10 +105,10 @@ export const CuriousFace: React.FC<FaceProps> = ({ color }) => {
     )
 }
 
-export const WorriedFace: React.FC<FaceProps> = ({ color}) => {
+export const WorriedFace: React.FC<FaceProps> = () => {
     const headWidth = SCREEN_WIDTH 
     const height = 400
-    const topEyes = 110
+    const topEyes = 120
     const centerX = headWidth / 2
     
     const pathString = `
@@ -134,7 +134,7 @@ export const WorriedFace: React.FC<FaceProps> = ({ color}) => {
             top: 0,
         }}>
             <Group transform={[{ translateX }, { translateY: -115 }, { scale }]}>
-                <Path path={pathString} color={color} />
+                <Path path={pathString} color={"#D48AFB"} />
             </Group>
             <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
             <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
@@ -162,7 +162,7 @@ export const FrustratedFace: React.FC<FaceProps> = ({ color }) => {
     `
 
     const centerX = headWidth / 2
-    const topEyes = 65
+    const topEyes = 75
 
     return (
         <Canvas style={{

@@ -11,7 +11,7 @@ export const CurveLines = ({
 }: CurveLinesProps) => {
     const width = Dimensions.get("window").width
     const height = 100
-    const lineColor = '#666666'
+    const lineColor = '#a3a3a3'
 
     const linesPath = useMemo(() => {
         const path = Skia.Path.Make()

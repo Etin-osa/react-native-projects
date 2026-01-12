@@ -19,9 +19,10 @@ interface MouthMaskProps {
     y: number
     size: number
     children?: ReactNode
+    color: string
 }
 
-const MouthMask: React.FC<MouthMaskProps> = ({ x, y, size, children }) => {
+const MouthMask: React.FC<MouthMaskProps> = ({ x, y, size, children, color }) => {
     const width = size * 3
     const height = size * 1.9
     const r = 8
@@ -35,7 +36,7 @@ const MouthMask: React.FC<MouthMaskProps> = ({ x, y, size, children }) => {
     `
     return (
         <Group>
-            <Path path={mouthPath} color="#000000" />
+            <Path path={mouthPath} color={color} />
             <Mask mask={<Path path={mouthPath} color="white" />}>
                 {children}
             </Mask>
@@ -53,9 +54,9 @@ export const SimpleLeftEye: React.FC<EyeProps> = ({ x, y, size, showEyebrow, eye
 
     return (
         <Group>
-            <Path path={`M ${x} ${y} m -${outerRadius},0 a${outerRadius},${outerRadius} 0 1,0 ${outerRadius*2},0 a${outerRadius},${outerRadius} 0 1,0 -${outerRadius*2},0`} color="#fff" />
+            <Path path={`M ${x} ${y} m -${outerRadius},0 a${outerRadius},${outerRadius} 0 1,0 ${outerRadius*2},0 a${outerRadius},${outerRadius} 0 1,0 -${outerRadius*2},0`} color="#ffffffe1" />
             <Path path={`M ${x + pupilOffsetX} ${y} m -${pupilRadius},0 a${pupilRadius},${pupilRadius} 0 1,0 ${pupilRadius*2},0 a${pupilRadius},${pupilRadius} 0 1,0 -${pupilRadius*2},0`} color="#000" />
-            <Path path={`M ${x + pupilOffsetX - pupilRadius * 0.5} ${y - pupilRadius * 0.5} m -${highlightRadius},0 a${highlightRadius},${highlightRadius} 0 1,0 ${highlightRadius*2},0 a${highlightRadius},${highlightRadius} 0 1,0 -${highlightRadius*2},0`} color="#fff" />
+            <Path path={`M ${x + pupilOffsetX - pupilRadius * 0.5} ${y - pupilRadius * 0.5} m -${highlightRadius},0 a${highlightRadius},${highlightRadius} 0 1,0 ${highlightRadius*2},0 a${highlightRadius},${highlightRadius} 0 1,0 -${highlightRadius*2},0`} color="#eeeeee" />
             {showEyebrow && (
                 <CurvedMouth
                     x={x}
@@ -80,9 +81,9 @@ export const SimpleRightEye: React.FC<EyeProps> = ({ x, y, size, showEyebrow, ey
 
     return (
         <Group>
-            <Path path={`M ${x} ${y} m -${outerRadius},0 a${outerRadius},${outerRadius} 0 1,0 ${outerRadius*2},0 a${outerRadius},${outerRadius} 0 1,0 -${outerRadius*2},0`} color="#fff" />
+            <Path path={`M ${x} ${y} m -${outerRadius},0 a${outerRadius},${outerRadius} 0 1,0 ${outerRadius*2},0 a${outerRadius},${outerRadius} 0 1,0 -${outerRadius*2},0`} color="#ffffffe1" />
             <Path path={`M ${x + pupilOffsetX} ${y} m -${pupilRadius},0 a${pupilRadius},${pupilRadius} 0 1,0 ${pupilRadius*2},0 a${pupilRadius},${pupilRadius} 0 1,0 -${pupilRadius*2},0`} color="#000" />
-            <Path path={`M ${x + pupilOffsetX - pupilRadius * 0.5} ${y - pupilRadius * 0.5} m -${highlightRadius},0 a${highlightRadius},${highlightRadius} 0 1,0 ${highlightRadius*2},0 a${highlightRadius},${highlightRadius} 0 1,0 -${highlightRadius*2},0`} color="#fff" />
+            <Path path={`M ${x + pupilOffsetX - pupilRadius * 0.5} ${y - pupilRadius * 0.5} m -${highlightRadius},0 a${highlightRadius},${highlightRadius} 0 1,0 ${highlightRadius*2},0 a${highlightRadius},${highlightRadius} 0 1,0 -${highlightRadius*2},0`} color="#eeeeee" />
             {showEyebrow && (
                 <CurvedMouth
                     x={x}
@@ -135,10 +136,10 @@ export const BothTeeth: React.FC<FacialProps> = ({ x, y, size }) => {
         Z
     `
     return (
-        <MouthMask x={x} y={y} size={size}>
+        <MouthMask x={x} y={y} size={size} color="#954D1F">
             <Group>
-                <Path path={topToothPath} color="#ffffff" transform={[{ translateY: -20 }]} />
-                <Path path={bottomToothPath} color="#ffffff" transform={[{ translateY: -40 }]} />
+                <Path path={topToothPath} color="#FBFFFE" transform={[{ translateY: -20 }]} />
+                <Path path={bottomToothPath} color="#FBFFFE" transform={[{ translateY: -40 }]} />
             </Group>
         </MouthMask>
     )
@@ -164,11 +165,11 @@ export const TeethWithTongue: React.FC<FacialProps> = ({ x, y, size }) => {
     const tongueCy = y + height * 1.05
 
     return (
-        <MouthMask x={x} y={y} size={size * 0.7}>
+        <MouthMask x={x} y={y} size={size * 0.7} color='#384617'>
             <Group>
-                <Path path={topToothPath} color="#fff" transform={[{ translateY: -35 }]} />
+                <Path path={topToothPath} color="#FBFFFE" transform={[{ translateY: -35 }]} />
                 <Path 
-                    color="#e74c3c" 
+                    color="#965037" 
                     transform={[{ translateY: -65 }]}
                     path={
                         `M ${tongueCx} ${tongueCy} m -${tongueRadius},0 a${tongueRadius},${tongueRadius} 0 1,0 ${tongueRadius*2},0 a${tongueRadius},${tongueRadius} 0 1,0 -${tongueRadius*2},0`

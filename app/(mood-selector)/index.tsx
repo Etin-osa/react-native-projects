@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons'
 import MaskedView from '@react-native-masked-view/masked-view'
 import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia'
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Animated, {
     interpolateColor,
@@ -31,38 +31,38 @@ type MoodSection = {
 const MOOD_SECTIONS: MoodSection[] = [
     {
         moods: ["Joyful", "Cheerful", "Content"],
-        gradient: ['#FF6B9D', '#6745c4'],
-        backgroundColor: '#fff0f5',
+        gradient: ['#FEBE00', '#a66eac'],
+        backgroundColor: '#F3E3B2',
         zIndex: 2
     },
     {
         moods: ["Satisfied", "Calm", "Reflective"],
-        gradient: ['#baece0', '#0c5e1c'],
-        backgroundColor: '#e0f7f4',
+        gradient: ['#4EBE42', '#31A2FC'],
+        backgroundColor: '#C2E49C',
         zIndex: 1
     },
     {
         moods: ["Nostalgic", "Curious", "Uncertain"],
-        gradient: ['#FFA07A', '#FF6347'],
-        backgroundColor: '#fff5eb',
+        gradient: ['#31A2FC', '#A176D3'],
+        backgroundColor: '#AAD9FC',
         zIndex: 2
     },
     {
         moods: ["Melancholy", "Worried", "Disappointed"],
-        gradient: ['#b0d5fa', '#032138'],
-        backgroundColor: '#f0f8ff',
+        gradient: ['#BF66AC', '#D04753'],
+        backgroundColor: '#E9C5FA',
         zIndex: 1
     },
     {
         moods: ["Lonely", "Frustrated", "Happiness"],
-        gradient: ['#6C5CE7', '#171538'],
-        backgroundColor: '#f5f3ff',
+        gradient: ['#FD7BC4', '#AA75C5'],
+        backgroundColor: '#FFBBE7',
         zIndex: 1
     },
     {
         moods: ["Heartbroken", "Despairing", "Devastated"],
-        gradient: ['#b35050', '#273b7a'],
-        backgroundColor: '#fff0f0',
+        gradient: ['#FD4E4D', '#D866A4'],
+        backgroundColor: '#FCB0B1',
         zIndex: 2
     }
 ]
@@ -151,6 +151,12 @@ export default function MoodSelector() {
         return [c1, c2]
     })
 
+    const poleGradientColors = useDerivedValue(() => {
+        const c1 = interpolateColor(scrollX.value, inputRange, outputRange2)
+        const c2 = interpolateColor(scrollX.value, inputRange, outputRange1)
+        return [c1, c2]
+    })
+
     const backgroundColors = useDerivedValue(() => {
         const c1 = interpolateColor(scrollX.value, inputRange, ouputRangeBg)
         return c1
@@ -218,11 +224,11 @@ export default function MoodSelector() {
                     <View style={styles.floatingMaskContainer} pointerEvents="none">
                         <BellCurveMask width={SCREEN_WIDTH} height={100} />
                         <Canvas style={StyleSheet.absoluteFill}>
-                            <Rect x={SCREEN_WIDTH / 2} y={3} width={2} height={120}>
+                            <Rect x={SCREEN_WIDTH / 2} y={9} width={2} height={100}>
                                 <LinearGradient
                                     start={vec(0, 0)}
                                     end={vec(2, 100)}
-                                    colors={gradientColors}
+                                    colors={poleGradientColors}
                                 />
                             </Rect>
                         </Canvas>
@@ -316,10 +322,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.dark.background,
     },
     topSection: {
-        height: SCREEN_HEIGHT * 0.55,
+        height: SCREEN_HEIGHT * 0.54,
         backgroundColor: Colors.light.background,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
+        borderBottomLeftRadius: 36,
+        borderBottomRightRadius: 36,
         overflow: 'hidden',
         position: 'relative',
     },
@@ -349,16 +355,17 @@ const styles = StyleSheet.create({
     bottomSection: {
         flex: 1,
         backgroundColor: Colors.dark.background,
-        paddingTop: 30,
+        paddingTop: 40,
     },
     headerText: {
-        fontSize: 40,
-        width: '70%',
-        fontWeight: '600',
+        fontSize: 48,
+        width: '80%',
         color: Colors.dark.text,
         textAlign: 'center',
         marginBottom: 20,
-        marginHorizontal: 'auto'
+        marginHorizontal: 'auto',
+        fontFamily: 'BodoniModa_ExtraBold',
+        lineHeight: 48
     },
     scrollContainer: {
         position: 'relative',
@@ -371,8 +378,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 40,
         position: 'relative',
         overflow: 'visible',
-        // borderWidth: 1,
-        // borderColor: 'red'
     },
     placeholderCard: {
         width: '100%',
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
     },
     bottomItemContainer: {
         width: SCREEN_WIDTH,
-        gap: 30,
+        gap: 40,
     },
     buttonRow: {
         flexDirection: 'row',
@@ -400,18 +405,18 @@ const styles = StyleSheet.create({
     },
     moodButton: {
         flex: 1,
-        height: 50,
+        height: 47,
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'white',
+        borderColor: '#ffffff2d',
         backgroundColor: 'transparent',
     },
     moodButtonText: {
         fontSize: 14,
         fontWeight: '600',
-        color: 'white',
+        color: '#ffffffd3',
     },
     replicaScroll: {
         height: 52,
@@ -420,8 +425,7 @@ const styles = StyleSheet.create({
     },
     maskView: { 
         height: 52, 
-        width: (SCREEN_WIDTH / 3) - 10, 
-        // width: SCREEN_WIDTH, 
+        width: (SCREEN_WIDTH / 3) - 10,
         pointerEvents: 'none', 
         marginHorizontal: 'auto', 
         backgroundColor: 'red', 
