@@ -1,6 +1,7 @@
 ---
 description: 'Explains my ideas in simple terms, breaking down complex concepts into easy-to-understand language.'
 tools: ['read/getNotebookSummary', 'read/readFile', 'read/terminalSelection', 'search/changes', 'search/codebase', 'search/fileSearch', 'search/listDirectory', 'search/textSearch', 'web', 'agent', 'todo']
+model: GPT-4.1 (copilot)
 handoffs: 
   - label: Start Planning Handover
     agent: planner

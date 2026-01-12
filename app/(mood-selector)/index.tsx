@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons'
 import MaskedView from '@react-native-masked-view/masked-view'
 import { Canvas, LinearGradient, Rect, vec } from '@shopify/react-native-skia'
 import { StatusBar } from 'expo-status-bar'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Animated, {
     interpolateColor,
@@ -24,6 +24,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
 type MoodSection = {
     moods: [string, string, string]
     gradient: [string, string],
+    backgroundColor: string,
     zIndex: number
 }
 
@@ -31,31 +32,37 @@ const MOOD_SECTIONS: MoodSection[] = [
     {
         moods: ["Joyful", "Cheerful", "Content"],
         gradient: ['#FF6B9D', '#6745c4'],
+        backgroundColor: '#fff0f5',
         zIndex: 2
     },
     {
         moods: ["Satisfied", "Calm", "Reflective"],
         gradient: ['#baece0', '#0c5e1c'],
+        backgroundColor: '#e0f7f4',
         zIndex: 1
     },
     {
         moods: ["Nostalgic", "Curious", "Uncertain"],
         gradient: ['#FFA07A', '#FF6347'],
+        backgroundColor: '#fff5eb',
         zIndex: 2
     },
     {
         moods: ["Melancholy", "Worried", "Disappointed"],
         gradient: ['#b0d5fa', '#032138'],
+        backgroundColor: '#f0f8ff',
         zIndex: 1
     },
     {
         moods: ["Lonely", "Frustrated", "Happiness"],
         gradient: ['#6C5CE7', '#171538'],
+        backgroundColor: '#f5f3ff',
         zIndex: 1
     },
     {
         moods: ["Heartbroken", "Despairing", "Devastated"],
         gradient: ['#b35050', '#273b7a'],
+        backgroundColor: '#fff0f0',
         zIndex: 2
     }
 ]
@@ -136,11 +143,17 @@ export default function MoodSelector() {
     const inputRange = MOOD_SECTIONS.map((_, index) => index * SCREEN_WIDTH)
     const outputRange1 = MOOD_SECTIONS.map(section => section.gradient[0])
     const outputRange2 = MOOD_SECTIONS.map(section => section.gradient[1])
+    const ouputRangeBg = MOOD_SECTIONS.map(section => section.backgroundColor)
 
     const gradientColors = useDerivedValue(() => {
         const c1 = interpolateColor(scrollX.value, inputRange, outputRange1)
         const c2 = interpolateColor(scrollX.value, inputRange, outputRange2)
         return [c1, c2]
+    })
+
+    const backgroundColors = useDerivedValue(() => {
+        const c1 = interpolateColor(scrollX.value, inputRange, ouputRangeBg)
+        return c1
     })
 
     useAnimatedReaction(
@@ -171,7 +184,10 @@ export default function MoodSelector() {
                     </TouchableOpacity>
                 </View>
 
-                {/* background color */}
+                {/* background color change */}
+                <Canvas style={[StyleSheet.absoluteFill, { zIndex: -1 }]}>
+                    <Rect x={0} y={0} width={SCREEN_WIDTH} height={SCREEN_HEIGHT} color={backgroundColors} />
+                </Canvas>
 
                 <Animated.ScrollView
                     ref={topScrollRef}

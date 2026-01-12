@@ -1,10 +1,17 @@
-import { Group, Mask, Path, Skia } from '@shopify/react-native-skia'
+import { AnimatedProp, Group, Mask, Path, Skia, Transforms3d } from '@shopify/react-native-skia'
 import React, { ReactNode } from 'react'
 
 interface FacialProps {
     x: number
     y: number
     size: number
+}
+
+export interface EyeProps extends FacialProps {
+    showEyebrow?: boolean
+    eyebrowTransform?: AnimatedProp<Transforms3d | undefined>
+    eyeSize?: number
+    eyeCurve?: number
 }
 
 interface MouthMaskProps {
@@ -36,10 +43,11 @@ const MouthMask: React.FC<MouthMaskProps> = ({ x, y, size, children }) => {
     )
 }
 
-export const SimpleLeftEye: React.FC<FacialProps> = ({ x, y, size }) => {
+export const SimpleLeftEye: React.FC<EyeProps> = ({ x, y, size, showEyebrow, eyebrowTransform, eyeSize, eyeCurve }) => {
     const outerRadius = size * 0.42
     const pupilRadius = size * 0.30
     const highlightRadius = size * 0.12
+
     // Pupil is offset slightly right from center
     const pupilOffsetX = size * 0.03
 
@@ -48,14 +56,25 @@ export const SimpleLeftEye: React.FC<FacialProps> = ({ x, y, size }) => {
             <Path path={`M ${x} ${y} m -${outerRadius},0 a${outerRadius},${outerRadius} 0 1,0 ${outerRadius*2},0 a${outerRadius},${outerRadius} 0 1,0 -${outerRadius*2},0`} color="#fff" />
             <Path path={`M ${x + pupilOffsetX} ${y} m -${pupilRadius},0 a${pupilRadius},${pupilRadius} 0 1,0 ${pupilRadius*2},0 a${pupilRadius},${pupilRadius} 0 1,0 -${pupilRadius*2},0`} color="#000" />
             <Path path={`M ${x + pupilOffsetX - pupilRadius * 0.5} ${y - pupilRadius * 0.5} m -${highlightRadius},0 a${highlightRadius},${highlightRadius} 0 1,0 ${highlightRadius*2},0 a${highlightRadius},${highlightRadius} 0 1,0 -${highlightRadius*2},0`} color="#fff" />
+            {showEyebrow && (
+                <CurvedMouth
+                    x={x}
+                    y={y - size * 0.5}
+                    size={eyeSize ?? size * 0.8}
+                    curve={eyeCurve ?? -size * 0.1}
+                    transform={eyebrowTransform}
+                    origin={{ x, y: y - size * 0.55 }}
+                />
+            )}
         </Group>
     )
 }
 
-export const SimpleRightEye: React.FC<FacialProps> = ({ x, y, size }) => {
+export const SimpleRightEye: React.FC<EyeProps> = ({ x, y, size, showEyebrow, eyebrowTransform, eyeSize, eyeCurve }) => {
     const outerRadius = size * 0.42
     const pupilRadius = size * 0.30
     const highlightRadius = size * 0.12
+    
     // Pupil is offset slightly left from center
     const pupilOffsetX = -size * 0.03
 
@@ -64,6 +83,16 @@ export const SimpleRightEye: React.FC<FacialProps> = ({ x, y, size }) => {
             <Path path={`M ${x} ${y} m -${outerRadius},0 a${outerRadius},${outerRadius} 0 1,0 ${outerRadius*2},0 a${outerRadius},${outerRadius} 0 1,0 -${outerRadius*2},0`} color="#fff" />
             <Path path={`M ${x + pupilOffsetX} ${y} m -${pupilRadius},0 a${pupilRadius},${pupilRadius} 0 1,0 ${pupilRadius*2},0 a${pupilRadius},${pupilRadius} 0 1,0 -${pupilRadius*2},0`} color="#000" />
             <Path path={`M ${x + pupilOffsetX - pupilRadius * 0.5} ${y - pupilRadius * 0.5} m -${highlightRadius},0 a${highlightRadius},${highlightRadius} 0 1,0 ${highlightRadius*2},0 a${highlightRadius},${highlightRadius} 0 1,0 -${highlightRadius*2},0`} color="#fff" />
+            {showEyebrow && (
+                <CurvedMouth
+                    x={x}
+                    y={y - size * 0.5}
+                    size={eyeSize ?? size * 0.8}
+                    curve={eyeCurve ?? -size * 0.1}
+                    transform={eyebrowTransform}
+                    origin={{ x, y: y - size * 0.55 }}
+                />
+            )}
         </Group>
     )
 }
@@ -155,16 +184,22 @@ export const CurvedMouth: React.FC<{
     y: number
     size: number
     curve: number
-    transform?: Array<{ translateX?: number } | { translateY?: number } | { rotate?: number }>
-}> = ({ x, y, size, curve }) => {
-    const mouthY = y + 40
+    transform?: AnimatedProp<Transforms3d | undefined>
+    origin?: { x: number; y: number }
+}> = ({ x, y, size, curve, transform, origin }) => {
     const mouthX1 = x - size / 2
     const mouthX2 = x + size / 2
-    const mouthControlY = mouthY + (curve)
+    const mouthControlY = y + curve
 
     return (
-        <Path path={
-            `M ${mouthX1} ${mouthY} Q ${x} ${mouthControlY} ${mouthX2} ${mouthY}`
-        } color="#222" style="stroke" strokeWidth={8} strokeCap={'round'} />
+        <Group transform={transform} origin={origin}>
+            <Path 
+                path={`M ${mouthX1} ${y} Q ${x} ${mouthControlY} ${mouthX2} ${y}`} 
+                color="#222" 
+                style="stroke" 
+                strokeWidth={8} 
+                strokeCap={'round'} 
+            />
+        </Group>
     )
 }

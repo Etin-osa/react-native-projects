@@ -1,4 +1,4 @@
-import { Canvas, center, Circle, Group, Paint, Path, Skia } from '@shopify/react-native-skia'
+import { Canvas, Circle, Group, Paint, Path, Skia } from '@shopify/react-native-skia'
 import React from 'react'
 import { Dimensions } from 'react-native'
 import { BothTeeth, CurvedEye, CurvedMouth, SimpleLeftEye, SimpleRightEye, TeethWithTongue } from './facial-features'
@@ -100,7 +100,7 @@ export const CuriousFace: React.FC<FaceProps> = ({ color }) => {
             </Group>    
             <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
             <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
-            <CurvedMouth x={centerX} y={topEyes} size={60} curve={25} />
+            <CurvedMouth x={centerX} y={topEyes + 40} size={60} curve={25} />
         </Canvas>
     )
 }
@@ -138,7 +138,7 @@ export const WorriedFace: React.FC<FaceProps> = ({ color}) => {
             </Group>
             <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
             <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
-            <CurvedMouth x={centerX} y={topEyes + 5} size={50} curve={0} />
+            <CurvedMouth x={centerX} y={topEyes + 45} size={50} curve={0} />
         </Canvas>
     )
 }
@@ -173,19 +173,78 @@ export const FrustratedFace: React.FC<FaceProps> = ({ color }) => {
             top: 45
         }}>
             <Path path={path} color={color} />
-            <SimpleLeftEye x={centerX - 30} y={topEyes} size={60} />
-            <SimpleRightEye x={centerX + 30} y={topEyes} size={60} />
+            <SimpleLeftEye 
+                x={centerX - 30} 
+                y={topEyes} 
+                size={60} 
+                showEyebrow={true}
+                eyebrowTransform={[{ rotate: 2.6 }, { translateX: 15 }, { translateY: 4 }]}
+                eyeSize={32}
+                eyeCurve={-10}
+            />
+            <SimpleRightEye 
+                x={centerX + 30} 
+                y={topEyes} 
+                size={60} 
+                showEyebrow={true}
+                eyebrowTransform={[{ rotate: -2.6 }, { translateX: -15 }, { translateY: 4 }]}
+                eyeSize={32}
+                eyeCurve={-10} 
+            />
         </Canvas>
     )
 }
 
 export const DespairingFace: React.FC<FaceProps> = ({ color}) => {
+    const headWidth = SCREEN_WIDTH * 1.6
+    const height = 400
+    const topEyes = 150
+    const centerX = headWidth / 2
+
+    const pathString = `
+        m 46.582299,100.45122 c -6.948866,4.93245 -15.085187,-2.776126 -23.218164,-0.2324 -8.132978,2.54372 -10.426999,13.51457 -18.9479755,13.42056 -8.5209747,-0.094 -10.5724091,-11.11278 -18.6472895,-13.835304 -8.074882,-2.722528 -16.379283,4.804674 -23.217645,-0.279875 -6.83836,-5.084552 -2.021329,-15.204735 -6.953783,-22.153602 -4.932455,-6.948867 -16.075238,-5.740434 -18.618963,-13.873412 -2.543726,-8.132977 7.301829,-13.488997 7.395831,-22.009972 0.094,-8.520976 -9.630998,-14.092896 -6.90847,-22.167778 2.722526,-8.074881 13.835937,-6.620921 18.920489,-13.459281 5.084554,-6.83836163 0.491957,-17.062351 7.440824,-21.994806 6.948866,-4.932455 15.085188,2.776123 23.218164,0.232398 8.1329786,-2.543726 10.4269997,-13.514568 18.947976,-13.420566 8.520975,0.094 10.572409,11.112782 18.647289,13.835309 8.074882,2.722527 16.379283,-4.804679 23.217645,0.279874 6.838361,5.084553 2.02133,15.20473581 6.953784,22.1536021 4.932455,6.9488679 16.075237,5.7404349 18.618963,13.8734129 2.543725,8.132976 -7.301829,13.488997 -7.395831,22.009971 -0.094,8.520977 9.630997,14.092897 6.90847,22.167779 -2.722527,8.07488 -13.835938,6.62092 -18.92049,13.45928 -5.084553,6.838362 -0.491956,17.062352 -7.440824,21.99481 z
+    `
+    const skiaPath = Skia.Path.MakeFromSVGString(pathString);
+
+    if (!skiaPath) {
+        return null
+    }
+
+    const { x, width } = skiaPath.getBounds();
+    // formula to center the path in the canvas
+    const scale = 4.2
+    const translateX = (headWidth - width * scale) / 2 - x * scale;
+
     return (
-        <Canvas style={{ width: 80, height: 80 }}>
-            <Circle cx={80 / 2} cy={80 / 2} r={80 / 2 - 4} color="#FFD93D" />
-            <Circle cx={80 / 2} cy={80 / 2} r={80 / 2 - 4}>
-                <Paint color="#000" style="stroke" strokeWidth={2} />
-            </Circle>
+        <Canvas style={{ 
+            position: 'absolute',
+            width: headWidth, 
+            height: height + 200,
+            left: SCREEN_WIDTH / 2 - headWidth / 2,
+            top: 0
+        }}>
+            <Group transform={[{ translateX }, { translateY: 150 }, { scale }]}>
+                <Path path={pathString} color={color} />
+            </Group>
+            <SimpleLeftEye 
+                x={centerX - 30} 
+                y={topEyes} 
+                size={60} 
+                showEyebrow={true}
+                eyebrowTransform={[{ rotate: -2.6 }, { translateX: -8 }, { translateY: -2 }]}
+                eyeSize={34}
+                eyeCurve={-8}
+            />
+            <SimpleRightEye 
+                x={centerX + 30} 
+                y={topEyes} 
+                size={60} 
+                showEyebrow={true}
+                eyebrowTransform={[{ rotate: 2.6 }, { translateX: 8 }, { translateY: -2 }]}
+                eyeSize={34}
+                eyeCurve={-8} 
+            />
+            <CurvedMouth x={centerX} y={topEyes + 50} size={50} curve={-25} />
         </Canvas>
     )
 }
