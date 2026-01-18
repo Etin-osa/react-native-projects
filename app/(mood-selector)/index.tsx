@@ -177,7 +177,7 @@ export default function MoodSelector() {
     return (
         <View style={styles.container}>
             <StatusBar style="dark" />
-            
+
             <View style={styles.topSection}>                
                 <View style={[styles.navigationHeader, { top: insets.top + 20 }]}>
                     

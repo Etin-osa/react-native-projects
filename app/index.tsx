@@ -6,7 +6,7 @@ export default function index() {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.replace('/(mood-selector)')
+            router.replace('/(life-time-counter)')
         }, 10);
 
         return () => clearTimeout(timer);
